@@ -8,7 +8,7 @@ Below is an abstract overview of my recent projects. Every system shown below wa
 * **Hardware Design:** Altium Designer (Multilayer, High-Speed, EMI/EMC optimization)
 * **Firmware:** Embedded C/C++ (STM32/ARM), Verilog (Intel/Altera FPGA), RTOS, bare-metal low-level drivers
 * **Software & GUI:** Qt6 (C++), HDF5 Data Logging, Multi-threading, Cross-Platform (Linux/Windows)
-* **Prototyping:** Manual assembly and soldering down to 0402 packages using hot air and iron.
+* **Prototyping:** Manual assembly and soldering down to 0402 packages using heat gun and soldering iron.
 ---
 
 ## Core Expertise
