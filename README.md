@@ -4,9 +4,9 @@
 As an aerospace engineer, I combine the uncompromising reliability and precision of aviation engineering with the rapid, solutions-oriented execution of a passionate maker.
 
 Below is an abstract overview of my last Projects.
-All Shown Projects are Developed, Soldered, Programmed and Tested by myself. 
+All shown Projects are Developed, Soldered, Programmed and Tested by myself. 
 For Hardware Development i use Altium, STM32 are programmed with Visual Studio Code, FPGA with Quartus Prime. 
-I Solder components down to 0402 Packages with a Soldering Iron and a Heat Gun. 
+I solder components down to 0402 packages with a soldering Iron and a Heat Gun. 
 
 ---
 
@@ -21,8 +21,6 @@ I Solder components down to 0402 Packages with a Soldering Iron and a Heat Gun.
 
 # 1. High-Density, High Accuracy Power Supply
 
-<img width="1267" height="787" alt="HP_Top" src="https://github.com/user-attachments/assets/7ecae9f4-9807-43c8-bf2d-e1a1280b4272" />
-<img width="1226" height="549" alt="HP_Bottum" src="https://github.com/user-attachments/assets/e80a2064-5af4-410a-8f3d-e8c8b57a4b2a" />
 
 * **Overview:** 600 W Total Board Power, 4 fully Isolated Channels, 55 V, 3.5 A, 5 mV / 0.5 mA accuracy.
 * **Implementation** The power supply implements an analog linear regulation with an operational amplifier and MOSFET, a low-side current sink, and a digital closed-loop control with an Intel MAX 10 FPGA.
@@ -34,6 +32,11 @@ I Solder components down to 0402 Packages with a Soldering Iron and a Heat Gun.
 HP HEAT --> Bottum Plate is a Big heatsink
 
 Parallel ADC and DAC --> USE a FPGA instead of MCU
+
+### Power Supply in Altium (Top and Bottom view) 
+
+<img width="1267" height="787" alt="HP_Top" src="https://github.com/user-attachments/assets/7ecae9f4-9807-43c8-bf2d-e1a1280b4272" />
+<img width="1226" height="549" alt="HP_Bottum" src="https://github.com/user-attachments/assets/e80a2064-5af4-410a-8f3d-e8c8b57a4b2a" />
 
 ---
 
@@ -97,9 +100,10 @@ I developed a Strain Gauge Measuring System combining an AD7768 and an AD8221, a
 
 * **The Challenge:** The two ADCs Output 8 Channel Data with 4 Byte each for a total of 32 Bytes via the ADC Data Bus. The STM32 SPI Interface can only receive 4 Byte in Direct Memory Access (DMA) Mode.   
 * **The Solution:** Instead of the STM32 SPI Interface, i use the Serial Audio Interface (SAI), which has a 32 Byte DMA Buffer. This Allows me to use the Full Potential of each ADC and have the MCU free for DSP Tasks and Data Output.  
+
 * **Firmware Architecture:** Developed drivers for the ADCs, Ethernet and USB Interface, Implementation of the FIR Filter.
 
-
+### Strain Gauge Measuring System in Altium
 <img width="1287" height="615" alt="AI_Shield_Layer_1" src="https://github.com/user-attachments/assets/8977fb7f-2260-4939-aab3-e5e947de58c1" />
 <img width="1257" height="601" alt="AI_Shield_Altium" src="https://github.com/user-attachments/assets/a63ca2ed-b8a2-41ef-aef9-6a7aa2f07407" />
 
@@ -107,58 +111,50 @@ I developed a Strain Gauge Measuring System combining an AD7768 and an AD8221, a
 
 # 3. QT6 GUI
 
-* **GUI:** For Data Visualisation and Data Logging I Developed a QT6 C++ GUI. The GUI is fully modular and can be adjusted to fit various kinds of Data Visualisation. I use json files which are read on startup, which configure the Data Interface, Logging Options, and most importantly which Data Instruments are shown.
-* The GUI has multiple Data Pages (depending on the configuration), a RAW Data Page and a Settings Page.
-* The Data is logged to a HDF5 File.
-* Receiving and Logging Data is handled in a seperate Thread.   
-* For the Instruments, I can choose between Progressbars, Textfields, Valuefields, Charts, Buttons, Sliders and Analog Instruments.
-* Each of the Instruments is created in a config.json file. It needs to have a type and a position to be shown in the GUI. Then several options can be added to costumize the Instrument. 
+* **GUI:** For data visualization and data logging, I developed a Qt6 C++ GUI. The GUI is fully modular and can be adapted to fit various kinds of data visualization. It reads the JSON configuration files on startup, which configure the data interface, logging options, and, most importantly, which data instruments are displayed.
+* The GUI features multiple data pages (depending on the configuration), a RAW data page, and a settings page.
+* The data is logged to an HDF5 file.
+* Receiving and logging data is handled in a separate thread.   
+* For each instrument, I can choose between progress bars, text fields, value fields, charts, buttons, sliders, and analog instruments.
+* Every instrument is defined in a single JSON file. It requires a type and a position to be displayed in the GUI. Several options can then be added to customize the instrument.
+
  
 ### 💻 Code Snippet (Demonstrating of Costumization of a Chart Instrument)
 
 ```json
-            "chart1": {
-                "type": "chart",
-                "position": "1;1",
-                "stretch": "3;2", 
-                "scale": 0.00048828125, 
-                "offset": 0, 
-                "2d_plot": false, 
-                "is_spline": false, 
-                "title": "Sensoren", 
-                "label": "Sensor 1", 
-                "xlabel": "Time (s)", 
-                "ylabel": "V_meas(mV)", 
-                "draw_time": 19, 
-                "y_color": "#191919", 
-                "x_color": "#191919", 
-                "graph_color": "#FF00FF", 
-                "background_color": "#FFFFFF",
-                "line_thickness": 3, 
-                "auto_rescale": true, 
-                "zoom_to_min_max": false, 
-                "zoom_offset": 1,
-                "y_axis_int": true, 
-                "y_axis_decimals": 1, 
-                "x_axis_tick_count": 7,
-                "limits": {
-                    "min_warn": 3300, 
-                    "min_error": 3300, 
-                    "max_warn": 3400, 
-                    "max_error": 3400, 
-                    "warn_color": "#FFF700", 
-                    "error_color": "#FF0000"
-                }    
-            }, 
-            "chartgraph": {
-                "type": "chart_graph", 
-                "connect_to": "chart1",
-                "scale": 0.00048828125, 
-                "offset": 0, 
-                "graph_color": "#000000", 
-                "label": "Sensor 2", 
-                "line_thickness": 3
-            },
+	"chart1": {
+		"type": "chart",
+		"position": "1;1",
+		"stretch": "3;2", 
+		"scale": 0.00048828125, 
+		"offset": 0, 
+		"2d_plot": false, 
+		"is_spline": false, 
+		"title": "Sensoren", 
+		"label": "Sensor 1", 
+		"xlabel": "Time (s)", 
+		"ylabel": "V_meas(mV)", 
+		"draw_time": 19, 
+		"y_color": "#191919", 
+		"x_color": "#191919", 
+		"graph_color": "#FF00FF", 
+		"background_color": "#FFFFFF",
+		"line_thickness": 3, 
+		"auto_rescale": true, 
+		"zoom_to_min_max": false, 
+		"zoom_offset": 1,
+		"y_axis_int": true, 
+		"y_axis_decimals": 1, 
+		"x_axis_tick_count": 7,
+		"limits": {
+			"min_warn": 3300, 
+			"min_error": 3300, 
+			"max_warn": 3400, 
+			"max_error": 3400, 
+			"warn_color": "#FFF700", 
+			"error_color": "#FF0000"
+		}    
+	}, 
 ```
 
 ### 💻 Code Snippet (Demonstrating of Multithreading and Data handling)
@@ -261,10 +257,14 @@ void dataStructure::onDataReceived(const QByteArray &data)
     }
 }
 ```
+### Example Layout of my GUI
+<img width="1542" height="802" alt="image" src="https://github.com/user-attachments/assets/18320425-3b03-46a9-8f11-28afd02d6e2e" />
 
 
 * The GUI can Receive Data via Ethernet and USB.
 * It works on Linux and Windows PCs. 
+
+
 
 ---
 
@@ -280,6 +280,9 @@ void dataStructure::onDataReceived(const QByteArray &data)
 * **PhD Initiative:** This entire setup was engineered as the foundation for a potential PhD thesis to thoroughly investigate and map multi-vehicle aerodynamic behaviors. 
 * **Current Status:** While the hardware and initial field tests have successfully proven the core thesis, I am currently seeking the right academic supervision to fully scale and complete this research.
 
+### GUI Layout use for the Road Test
+<img width="1908" height="994" alt="image" src="https://github.com/user-attachments/assets/a64497e5-16cd-40f9-8b72-73137e589cec" />
+
 ---
 
 ## Additional Skills & Hands-on Experience
@@ -291,6 +294,6 @@ void dataStructure::onDataReceived(const QByteArray &data)
 ---
 
 ## 📄 Engineering Portfolio
-Due to intellectual property (IP) and future commercialization, my core repositories are private. 
+Due to intellectual property and future commercialization, my core repositories are private. 
 
 Code or Hardware deep-dives can be provided via screen-share during technical interviews.
