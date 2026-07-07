@@ -11,7 +11,7 @@ Below is an abstract overview of my recent projects. Every system shown below wa
 * **Prototyping:** Manual assembly and soldering down to 0402 packages using hot air and iron.
 ---
 
-## 🛠️ Core Expertise
+## Core Expertise
 * **Hardware:** PCB Design, High-Speed Signalling, Multilayer Stackups, Impedance Matching, EMI/EMC Mitigation.
 * **Software:** Embedded C/C++, Real-Time Operating Systems (RTOS), DMA Optimization, State Machine Architectures.
 * **GUI & Analytics:** Qt6 Framework, Real-time Data Visualization, High-Throughput Data Logging.
