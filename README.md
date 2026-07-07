@@ -1,46 +1,44 @@
-# Hi, I'm Karl
+# Hi, I'm Karl Heinemann 
 ### Hardware & Embedded Systems Engineer | 25 Guns Applicant
 
-As an aerospace engineer, I combine the uncompromising reliability and precision of aviation engineering with the rapid, solutions-oriented execution of a passionate maker.
+As an aerospace engineer, I bridge the gap between the uncompromising reliability of aviation standards and the rapid, solutions-oriented execution of a passionate maker. 
 
-Below is an abstract overview of my last Projects.
-All shown Projects are Developed, Soldered, Programmed and Tested by myself. 
-For Hardware Development i use Altium, STM32 are programmed with Visual Studio Code, FPGA with Quartus Prime. 
-I solder components down to 0402 packages with a soldering Iron and a Heat Gun. 
+Below is an abstract overview of my recent projects. Every system shown below was **designed, routed, soldered, programmed, and validated entirely by myself.**
 
+* **Hardware Design:** Altium Designer (Multilayer, High-Speed, EMI/EMC optimization)
+* **Firmware:** Embedded C/C++ (STM32/ARM), Verilog (Intel/Altera FPGA), RTOS, bare-metal low-level drivers
+* **Software & GUI:** Qt6 (C++), HDF5 Data Logging, Multi-threading, Cross-Platform (Linux/Windows)
+* **Prototyping:** Manual assembly and soldering down to 0402 packages using hot air and iron.
 ---
 
 ## 🛠️ Core Expertise
-* **Hardware:** PCB Design (Altium Designer), High-Speed Signalling, Multilayer Stackups, EMI/EMC Optimization.
-* **Software:** Embedded C/C++, Real-Time Operating Systems (RTOS), Low-Level Drivers, State Machine Architecture.
-* **GUI:** QT6, Data Visualisations, Data Logging
+* **Hardware:** PCB Design, High-Speed Signalling, Multilayer Stackups, Impedance Matching, EMI/EMC Mitigation.
+* **Software:** Embedded C/C++, Real-Time Operating Systems (RTOS), DMA Optimization, State Machine Architectures.
+* **GUI & Analytics:** Qt6 Framework, Real-time Data Visualization, High-Throughput Data Logging.
 
 ---
 
-## 🚀 Featured Projects (Private Source / Commercializing)
+## Featured Projects (Private Source / Commercializing)
 
-# 1. High-Density, High Accuracy Power Supply
+## 1. High-Density, High-Accuracy Power Supply & Electronic Load
 
+* **Overview:** 600W Total Board Power, 4 fully isolated channels (55V, 3.5A) with 5mV / 0.5mA setting accuracy.
+* **Implementation:** Features analog linear regulation via operational amplifiers and power MOSFETs, a low-side current sink, and a digital closed-loop control system powered by an Intel MAX 10 FPGA.
+* **Firmware Architecture:** A central STM32H7 manages high-level data aggregation and USB communication. Four isolated MAX 10 FPGAs independently drive the 500 kSPS ADCs and DACs to ensure strict determinism.
 
-* **Overview:** 600 W Total Board Power, 4 fully Isolated Channels, 55 V, 3.5 A, 5 mV / 0.5 mA accuracy.
-* **Implementation** The power supply implements an analog linear regulation with an operational amplifier and MOSFET, a low-side current sink, and a digital closed-loop control with an Intel MAX 10 FPGA.
-* **Firmware Architecture:** Central STM32H7 for Data Collection and Data Output via USB. 4 Isolated MAX 10 FPGAs to Drive the 500kSpS ADCs and DACs.  
+* **Design Challenges & Engineering Solutions:**
+  1. **Strict Noise Constraints:** *Challenge:* Achieving low noise output for precision analog rails. *Solution:* Integrated high-PSRR linear regulators combined with strictly segregated, star-routed analog and digital ground (GND) planes to eliminate crosstalk.
+  2. **Extreme Thermal Management:** *Challenge:* Managing high heat dissipation when operating as an active electronic load. *Solution:* Mount the PCB onto an actively cooled 20x20 cm heatsink.
+  3. **High-Speed Data Throughput:** *Challenge:* Interfacing parallel ADC/DAC architectures. *Solution:* Offloaded the control loop from the MCU to dedicated FPGAs, enabling deterministic, parallel data stream processing.
 
-* **The Challenge:** low noise   
-* **The Solution:** low noise LDO, längsregler, seperated Analog and digital GND 
-
-HP HEAT --> Bottum Plate is a Big heatsink
-
-Parallel ADC and DAC --> USE a FPGA instead of MCU
-
-### Power Supply in Altium (Top and Bottom view) 
+#### Power Supply Layout (Altium Designer - Top & Bottom View)
 
 <img width="1267" height="787" alt="HP_Top" src="https://github.com/user-attachments/assets/7ecae9f4-9807-43c8-bf2d-e1a1280b4272" />
 <img width="1226" height="549" alt="HP_Bottum" src="https://github.com/user-attachments/assets/e80a2064-5af4-410a-8f3d-e8c8b57a4b2a" />
 
 ---
 
-### 💻 Code Snippet (Demonstrating Control Loop in the Intel MAX 10 FPGA)
+#### Code Snippet (Demonstrating Control Loop Verilog Code for the Intel MAX 10 FPGA)
 
 ```verilog
 module dac_adjuster (
@@ -51,12 +49,12 @@ module dac_adjuster (
 );
 
     reg signed [15:0] step;
-    reg signed [16:0] temp_out; // 17 Bit, um Überlauf bei der Rechnung zu prüfen
+    reg signed [16:0] temp_out; // 17-bit to prevent arithmetic overflow
 	 
     always @(posedge clk) begin
-        // Schrittweite bestimmen
+        // Determine dynamic step size based on error delta
         if (diff > 50 || diff < -50) begin
-            step = diff >>> 1; // Halbe Differenz
+            step = diff >>> 1; // Arithmetic right shift for fast division
             
             if (step > 100)  step = 100;
             if (step < -100) step = -100;
@@ -71,55 +69,49 @@ module dac_adjuster (
             step = 0;
         end
 
-        // Berechnung mit 17-Bit (Vorzeichenbehaftet)
-        // Wir wandeln dac_in in ein signed 17-bit um, um sicher zu rechnen
-        temp_out = $signed({1'b0, dac_in}) - $signed(step);
+        // 17-bit signed calculation to prevent clipping errors
+        temp_out = \(signed({1'b0, dac_in}) -\)signed(step);
 
-        // Limitierung / Sättigung
+        // Saturation / Boundary clamping
         if (temp_out < 17'sd32768) begin
-            dac_out <= 16'd32768;      // Untere Grenze (Mitte)
+            dac_out <= 16'd32768;      // Lower bound (Mid-scale)
         end
         else if (temp_out > 17'sd65535) begin
-            dac_out <= 16'hFFFF;       // Obere Grenze (Max)
+            dac_out <= 16'hFFFF;       // Upper bound (Max)
         end
         else begin
-            dac_out <= temp_out[15:0]; // Gültiger Bereich
+            dac_out <= temp_out[15:0]; // Valid range assign
         end
     end
 endmodule
-
 ```
 
 ---
 
-# 2. Strain Gauge Measuring System
+## 2. High-Speed Strain Gauge Measurement System
 
-I developed a Strain Gauge Measuring System combining an AD7768 and an AD8221, achieving an exceptional microvolt-level input accuracy across a 4.096V range with dynamic software-calibrated gain stages. The system to supports sampling rates up to 256 kSPS. Additionally, I integrated a sinusoidal excitation option paired with analog synchronous demodulation to ensure bulletproof EMI immunity and eliminate DC offsets.
+Developed a 16-channel strain gauge DAQ combining AD7768 ADCs and AD8221 instrumentation amplifiers, achieving microvolt-level input accuracy across a 4.096V range. 
 
-* **Overview:** 16 Channel, 256kSpS, Sine Excitation, Analog Sine Demodulation, DSP, Ethernet and USB Data Output 
+* **Overview:** 16 Channels, 256 kSPS, Sinusoidal Excitation, Analog Synchronous Demodulation, Hardware DSP, Ethernet & USB telemetry.
+* **Design Challenge:** The ADCs output 8 channels of 4-byte data simultaneously (32 bytes total) over the bus. The standard STM32 SPI peripheral cannot easily handle this arbitrary word length efficiently in high-speed DMA mode without CPU overhead.
+* **Engineering Solution:** Reconfigured the MCU's Serial Audio Interface (SAI) peripheral to act as the primary data receiver. The SAI’s native 32-byte DMA FIFO allowed continuous, zero-CPU-overhead data streaming, keeping the Cortex-M7 core free for real-time DSP (FIR filtering) and communication stacks.
+* **Firmware Architecture:** Developed bare-metal drivers for the ADCs, lwIP Ethernet stack, USB CDC, and a fixed-point FIR filter cascade.
 
-* **The Challenge:** The two ADCs Output 8 Channel Data with 4 Byte each for a total of 32 Bytes via the ADC Data Bus. The STM32 SPI Interface can only receive 4 Byte in Direct Memory Access (DMA) Mode.   
-* **The Solution:** Instead of the STM32 SPI Interface, i use the Serial Audio Interface (SAI), which has a 32 Byte DMA Buffer. This Allows me to use the Full Potential of each ADC and have the MCU free for DSP Tasks and Data Output.  
+#### Strain Gauge System Layout (Altium Designer)
 
-* **Firmware Architecture:** Developed drivers for the ADCs, Ethernet and USB Interface, Implementation of the FIR Filter.
-
-### Strain Gauge Measuring System in Altium
 <img width="1287" height="615" alt="AI_Shield_Layer_1" src="https://github.com/user-attachments/assets/8977fb7f-2260-4939-aab3-e5e947de58c1" />
 <img width="1257" height="601" alt="AI_Shield_Altium" src="https://github.com/user-attachments/assets/a63ca2ed-b8a2-41ef-aef9-6a7aa2f07407" />
 
 ---
 
-# 3. QT6 GUI
+## 3. Qt6 Real-Time Telemetry GUI
 
-* **GUI:** For data visualization and data logging, I developed a Qt6 C++ GUI. The GUI is fully modular and can be adapted to fit various kinds of data visualization. It reads the JSON configuration files on startup, which configure the data interface, logging options, and, most importantly, which data instruments are displayed.
-* The GUI features multiple data pages (depending on the configuration), a RAW data page, and a settings page.
-* The data is logged to an HDF5 file.
-* Receiving and logging data is handled in a separate thread.   
-* For each instrument, I can choose between progress bars, text fields, value fields, charts, buttons, sliders, and analog instruments.
-* Every instrument is defined in a single JSON file. It requires a type and a position to be displayed in the GUI. Several options can then be added to customize the instrument.
-
+* **Architecture:** Developed a fully modular, multi-threaded Qt6 (C++) GUI for real-time data visualization and high-throughput logging. 
+* **Dynamic Configuration:** The application parses JSON configuration files on startup to dynamically build the UI pipeline, defining data interfaces, sampling rates, and layout structures.
+* **Performance:** Telemetry parsing and HDF5 file logging run on dedicated worker threads to ensure the main UI thread remains responsive at high data rates.
+* **UI Features:** Supports dynamic plotting, rolling charts, progress indicators, and custom analog gauge widgets. Cross-platform compatibility verified on Linux and Windows.
  
-### 💻 Code Snippet (Demonstrating of Costumization of a Chart Instrument)
+#### Code Snippet (Demonstrating of Costumization of a Chart Instrument)
 
 ```json
 	"chart1": {
@@ -157,7 +149,7 @@ I developed a Strain Gauge Measuring System combining an AD7768 and an AD8221, a
 	}, 
 ```
 
-### 💻 Code Snippet (Demonstrating of Multithreading and Data handling)
+#### Code Snippet (Demonstrating of Multithreading and Data handling)
 
 ```c
 // ————————————————————————————————
@@ -257,30 +249,24 @@ void dataStructure::onDataReceived(const QByteArray &data)
     }
 }
 ```
-### Example Layout of my GUI
-<img width="1542" height="802" alt="image" src="https://github.com/user-attachments/assets/18320425-3b03-46a9-8f11-28afd02d6e2e" />
+#### Example Layout of my GUI
 
+<img width="1542" height="802" alt="image" src="https://github.com/user-attachments/assets/18320425-3b03-46a9-8f11-28afd02d6e2e" />
 
 * The GUI can Receive Data via Ethernet and USB.
 * It works on Linux and Windows PCs. 
 
-
-
 ---
 
-## System Application: Aerodynamic Analytics 
+## Full-System Validation: Real-World Aerodynamic Analytics
 
-* **The Objective:** I had a theory to optimize vehicle efficiency by mapping dynamic, real-time surface pressure distributions, with a specific focus on analyzing aerodynamic interferences between two or more vehicles. To validate this approach independently, I utilized my custom strain gauge measuring system and GUI to build a functional, real-world proof-of-concept.
-* **Sensors:** The Sensors are Strain Gauge based Presure sensors, which make them easy to use with my System. 
-* **Real-World Validation:** Conducted initial vehicle road tests using a 3-sensor configuration. The system successfully captured aerodynamic interference and wake-flux disruptions between two vehicles during a highway overtaking maneuver.
-* **Next Scale:** The architecture is fully prepared to scale into a dense 100+ sensor array to map full-body dynamic airflow topologies and pinpoint absolute aerodynamic efficiency peaks.
+* **The Objective:** Formulated a hypothesis to optimize fleet wake-efficiency by mapping dynamic, real-time vehicle surface pressure distributions, specifically analyzing aerodynamic boundary layer interferences during overtaking maneuvers.
+* **Sensor Integration:** Deployed strain-gauge-based pressure sensors integrated into my DAQ system.
+* **Real-World Proof of Concept:** Conducted dynamic road tests using a 5-sensor instrument cluster configuration. The system successfully captured microvolt-level transient pressure drops and wake-flux disruptions between two vehicles during a 70 km/h overtaking maneuver.
+* **Future Outlook:** The architecture is fully prepared to scale into a high-density 100+ sensor array to map full-body dynamic airflow topologies and pinpoint absolute aerodynamic efficiency peaks.
 
-### Future Outlook & Academic Scope
+#### Telemetry GUI Dashboard (Configured for the Dynamic Road Test)
 
-* **PhD Initiative:** This entire setup was engineered as the foundation for a potential PhD thesis to thoroughly investigate and map multi-vehicle aerodynamic behaviors. 
-* **Current Status:** While the hardware and initial field tests have successfully proven the core thesis, I am currently seeking the right academic supervision to fully scale and complete this research.
-
-### GUI Layout use for the Road Test
 <img width="1908" height="994" alt="image" src="https://github.com/user-attachments/assets/a64497e5-16cd-40f9-8b72-73137e589cec" />
 
 ---
@@ -293,7 +279,11 @@ void dataStructure::onDataReceived(const QByteArray &data)
 
 ---
 
-## 📄 Engineering Portfolio
-Due to intellectual property and future commercialization, my core repositories are private. 
 
-Code or Hardware deep-dives can be provided via screen-share during technical interviews.
+## 📄 Engineering Portfolio & IP Notice
+
+Due to intellectual property protection and commercialization pathways, my core source code and schematic repositories remain private. 
+
+**Deep-dives into specific hardware design blocks, firmware architectures, or code segments can be provided via screen-share during technical interviews.**
+
+
