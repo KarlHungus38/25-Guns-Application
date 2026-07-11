@@ -251,7 +251,7 @@ void dataStructure::onDataReceived(const QByteArray &data)
 ```
 #### Example Layout of my GUI
 
-<img width="1542" height="802" alt="image" src="https://github.com/user-attachments/assets/18320425-3b03-46a9-8f11-28afd02d6e2e" />
+<img width="1913" height="995" alt="image" src="https://github.com/user-attachments/assets/9e896d79-ff36-478e-9894-cdbd37b2c56e" />
 
 * The GUI can Receive Data via Ethernet and USB.
 * It works on Linux and Windows PCs. 
