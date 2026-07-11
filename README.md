@@ -251,7 +251,7 @@ void dataStructure::onDataReceived(const QByteArray &data)
 ```
 #### Example Layout of my GUI
 
-<img width="1913" height="995" alt="image" src="https://github.com/user-attachments/assets/9e896d79-ff36-478e-9894-cdbd37b2c56e" />
+<img width="1555" height="803" alt="image" src="https://github.com/user-attachments/assets/de25147c-e58f-4dfc-bdb9-852322f191e3" />
 
 * The GUI can Receive Data via Ethernet and USB.
 * It works on Linux and Windows PCs. 
@@ -267,7 +267,7 @@ void dataStructure::onDataReceived(const QByteArray &data)
 
 #### Telemetry GUI Dashboard (Configured for the Dynamic Road Test)
 
-<img width="1908" height="994" alt="image" src="https://github.com/user-attachments/assets/a64497e5-16cd-40f9-8b72-73137e589cec" />
+<img width="1913" height="995" alt="image" src="https://github.com/user-attachments/assets/9e896d79-ff36-478e-9894-cdbd37b2c56e" />
 
 ---
 
