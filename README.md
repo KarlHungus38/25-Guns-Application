@@ -43,9 +43,9 @@ Below is an abstract overview of my recent projects. Every system shown below wa
 ```verilog
 module dac_adjuster (
     input clk,
-    input [15:0] dac_in,
-    input signed [15:0] diff, 
-    output reg [15:0] dac_out
+    input [15:0] dac_in,		// DAC target Value
+    input signed [15:0] diff, 	// diff to target
+    output reg [15:0] dac_out	// Output to DAC
 );
 
     reg signed [15:0] step;
@@ -53,19 +53,19 @@ module dac_adjuster (
 	 
     always @(posedge clk) begin
         // Determine dynamic step size based on error delta
-        if (diff > 50 || diff < -50) begin
+        if (diff > 50 || diff < -50) begin // fast adjust, big diff
             step = diff >>> 1; // Arithmetic right shift for fast division
             
             if (step > 100)  step = 100;
             if (step < -100) step = -100;
         end
-        else if (diff > 3) begin
+        else if (diff > 3) begin			// slow adjust, small diff
             step = 1;
         end
         else if (diff < -3) begin
             step = -1;
         end
-        else begin
+        else begin							// no diff			
             step = 0;
         end
 
