@@ -108,7 +108,7 @@ Developed a 16-channel strain gauge DAQ combining AD7768 ADCs and AD8221 instrum
 
 * **Architecture:** Developed a fully modular, multi-threaded Qt6 (C++) GUI for real-time data visualization and high-throughput logging. 
 * **Dynamic Configuration:** The application parses JSON configuration files on startup to dynamically build the UI pipeline, defining data interfaces, sampling rates, and layout structures.
-* **Performance:** Telemetry parsing and HDF5 file logging run on dedicated worker threads to ensure the main UI thread remains responsive at high data rates.
+* **Performance:** Telemetry parsing and HDF5 file logging run on a dedicated worker thread to ensure the main UI thread remains responsive at high data rates.
 * **UI Features:** Supports dynamic plotting, rolling charts, progress indicators, and custom analog gauge widgets. Cross-platform compatibility verified on Linux and Windows.
  
 #### Code Snippet (Demonstrating of Costumization of a Chart Instrument)
@@ -261,7 +261,7 @@ void dataStructure::onDataReceived(const QByteArray &data)
 ## Full-System Validation: Real-World Aerodynamic Analytics
 
 * **The Objective:** Formulated a hypothesis to optimize fleet wake-efficiency by mapping dynamic, real-time vehicle surface pressure distributions, specifically analyzing aerodynamic boundary layer interferences during overtaking maneuvers.
-* **Sensor Integration:** Deployed strain-gauge-based pressure sensors integrated into my DAQ system.
+* **Sensor Integration:** Strain-gauge-based pressure sensors integrated into my DAQ system.
 * **Real-World Proof of Concept:** Conducted dynamic road tests using a 5-sensor instrument cluster configuration. The system successfully captured microvolt-level transient pressure drops and wake-flux disruptions between two vehicles during a 70 km/h overtaking maneuver.
 * **Future Outlook:** The architecture is fully prepared to scale into a high-density 100+ sensor array to map full-body dynamic airflow topologies and pinpoint absolute aerodynamic efficiency peaks.
 
