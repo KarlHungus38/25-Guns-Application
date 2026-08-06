@@ -1,5 +1,5 @@
 # Hi, I'm Karl Heinemann 
-### Hardware & Embedded Systems Engineer | 25 Guns Applicant
+### Hardware & Embedded Systems Engineer
 
 As an aerospace engineer, I bridge the gap between the uncompromising reliability of aviation standards and the rapid, solutions-oriented execution of a passionate maker. 
 
